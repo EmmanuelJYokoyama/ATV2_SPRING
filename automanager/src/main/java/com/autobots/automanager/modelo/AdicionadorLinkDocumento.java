@@ -20,7 +20,7 @@ public class AdicionadorLinkDocumento implements AdicionadorLink<Documento>{
 			Link linkProprio = WebMvcLinkBuilder
 					.linkTo(WebMvcLinkBuilder
 							.methodOn(DocumentoControle.class)
-							.buscarDocumentoPorId(id))
+							.obterDocumento(id))
 					.withRel("Visualizar documento de id " + id);
 			documento.add(linkProprio);
 		}
@@ -31,7 +31,7 @@ public class AdicionadorLinkDocumento implements AdicionadorLink<Documento>{
 		Link linkProprio = WebMvcLinkBuilder
 				.linkTo(WebMvcLinkBuilder
 						.methodOn(DocumentoControle.class)
-						.buscarDocumentos())
+						.obterDocumentos())
 				.withRel("Lista de Documentos");
 		objeto.add(linkProprio);
 	}
@@ -41,7 +41,7 @@ public class AdicionadorLinkDocumento implements AdicionadorLink<Documento>{
 		Link linkProprio = WebMvcLinkBuilder
 				.linkTo(WebMvcLinkBuilder
 						.methodOn(DocumentoControle.class)
-						.editarDocumentoPorId(objeto))
+						.atualizarDocumento(objeto))
 				.withRel("Atualizar documento de id " + objeto.getId());
 		objeto.add(linkProprio);
 	}

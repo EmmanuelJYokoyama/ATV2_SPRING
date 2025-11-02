@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autobots.automanager.entidades.Cliente;
-import com.autobots.automanager.modelo.AdicionadorLinkCliente;
 import com.autobots.automanager.modelo.ClienteAtualizador;
 import com.autobots.automanager.modelo.ClienteSelecionador;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
@@ -23,61 +22,55 @@ import com.autobots.automanager.repositorios.ClienteRepositorio;
 @RestController
 @RequestMapping("/cliente")
 public class ClienteControle {
-	@Autowired
-	private ClienteRepositorio repositorio;
-	@Autowired
-	private ClienteSelecionador selecionador;
-	@Autowired
-	private AdicionadorLinkCliente adicionadorLink;
+    @Autowired
+    private ClienteRepositorio repositorio;
+    @Autowired
+    private ClienteSelecionador selecionador;
 
-	@GetMapping("/cliente/{id}")
-	public ResponseEntity<Cliente> obterCliente(@PathVariable long id) {
-		List<Cliente> clientes = repositorio.findAll();
-		Cliente cliente = selecionador.selecionar(clientes, id);
-		HttpStatus status = null;
-		if(cliente == null) {
-			status = HttpStatus.NOT_FOUND;
-		}else {
-			adicionadorLink.adicionarLink(cliente);
-			adicionadorLink.adicionarLinkUpdate(cliente);
-			adicionadorLink.adicionarLinkDelete(cliente);
-			status = HttpStatus.FOUND;
-		}
-		return new ResponseEntity<Cliente>(cliente,status);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obterCliente(@PathVariable long id) {
+        List<Cliente> clientes = repositorio.findAll();
+        Cliente cliente = selecionador.selecionar(clientes, id);
+        if (cliente != null) {
+            return ResponseEntity.ok(cliente);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+        }
+    }
 
-	@GetMapping("/clientes")
-	public ResponseEntity<List<Cliente>> obterClientes() {
-		List<Cliente> clientes = repositorio.findAll();
-		adicionadorLink.adicionarLink(clientes);
-		for(Cliente cliente: clientes) {
-			adicionadorLink.adicionarLinkUpdate(cliente);
-			adicionadorLink.adicionarLinkDelete(cliente);
-		}
-		return new ResponseEntity<List<Cliente>>(clientes,HttpStatus.FOUND);
-	}
+    @GetMapping("/clientes")
+    public ResponseEntity<?> obterClientes() {
+        List<Cliente> clientes = repositorio.findAll();
+        return ResponseEntity.ok(clientes);
+    }
 
-	@PostMapping("/cadastro")
-	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente) {
-		Cliente resposta = repositorio.save(cliente);
-		adicionadorLink.adicionarLinkUpdate(resposta);
-		adicionadorLink.adicionarLinkDelete(resposta);
-		return new ResponseEntity<Cliente>(cliente,HttpStatus.CREATED);
-	}
+    @PostMapping("/cadastro")
+    public ResponseEntity<String> cadastrarCliente(@RequestBody Cliente cliente) {
+        repositorio.save(cliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Cliente cadastrado com sucesso.");
+    }
 
-	@PutMapping("/atualizar")
-	public ResponseEntity<Cliente> atualizarCliente(@RequestBody Cliente atualizacao) {
-		Cliente cliente = repositorio.getById(atualizacao.getId());
-		ClienteAtualizador atualizador = new ClienteAtualizador();
-		atualizador.atualizar(cliente, atualizacao);
-		repositorio.save(cliente);
-		return new ResponseEntity<Cliente>(cliente,HttpStatus.ACCEPTED);
-	}
+    @PutMapping("/atualizar")
+    public ResponseEntity<String> atualizarCliente(@RequestBody Cliente atualizacao) {
+        if (repositorio.existsById(atualizacao.getId())) {
+            Cliente cliente = repositorio.findById(atualizacao.getId()).get();
+            ClienteAtualizador atualizador = new ClienteAtualizador();
+            atualizador.atualizar(cliente, atualizacao);
+            repositorio.save(cliente);
+            return ResponseEntity.ok("Cliente atualizado com sucesso.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+        }
+    }
 
-	@DeleteMapping("/excluir")
-	public ResponseEntity<?> excluirCliente(@RequestBody Cliente exclusao) {
-		Cliente cliente = repositorio.getById(exclusao.getId());
-		repositorio.delete(cliente);
-		return new ResponseEntity<>("Excluido com sucesso...",HttpStatus.ACCEPTED);
-	}
+    @DeleteMapping("/excluir")
+    public ResponseEntity<String> excluirCliente(@RequestBody Cliente exclusao) {
+        if (repositorio.existsById(exclusao.getId())) {
+            Cliente cliente = repositorio.findById(exclusao.getId()).get();
+            repositorio.delete(cliente);
+            return ResponseEntity.ok("Cliente excluído com sucesso.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
+        }
+    }
 }

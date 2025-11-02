@@ -20,7 +20,7 @@ public class AdicionadorLinkTelefone implements AdicionadorLink<Telefone> {
 			Link linkProprio = WebMvcLinkBuilder
 					.linkTo(WebMvcLinkBuilder
 							.methodOn(TelefoneControle.class)
-							.buscarTelefone(id))
+							.obterTelefone(id))
 					.withRel("Visualizar telefone de id " + id);
 			telefone.add(linkProprio);
 		}
@@ -32,7 +32,7 @@ public class AdicionadorLinkTelefone implements AdicionadorLink<Telefone> {
 		Link linkProprio = WebMvcLinkBuilder
 				.linkTo(WebMvcLinkBuilder
 						.methodOn(TelefoneControle.class)
-						.buscarTelefones())
+						.obterTelefones())
 				.withRel("Lista de telefones");
 		objeto.add(linkProprio);
 	}
@@ -42,7 +42,7 @@ public class AdicionadorLinkTelefone implements AdicionadorLink<Telefone> {
 		Link linkProprio = WebMvcLinkBuilder
 				.linkTo(WebMvcLinkBuilder
 						.methodOn(TelefoneControle.class)
-						.editarTelefonePorId(objeto))
+						.atualizarTelefone(objeto))
 					.withRel("Atualizar telefone de id " + objeto.getId());
 		objeto.add(linkProprio);
 	}
