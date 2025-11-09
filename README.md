@@ -8,7 +8,7 @@
 
 ```bash
  git clone https://github.com/EmmanuelJYokoyama/ATV2_SPRING.git
- cd autobots
+ cd automanager
  ```
   
 ### 2. Compile e instale as dependências:
